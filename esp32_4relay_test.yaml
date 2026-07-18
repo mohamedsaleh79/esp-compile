@@ -4,7 +4,7 @@ esphome:
   on_boot:
     priority: 600
     then:
-      - script.execute: cycle_5min
+            - script.execute: cycle_5min
 
 esp32:
   board: esp32dev
@@ -24,103 +24,98 @@ web_server:
 logger:
 api:
 ota:
-  password: "12345678"
+    - platform: esphome
+    password: "12345678"
 
 dallas:
-  - pin: GPIO4
+    - pin: GPIO4
     update_interval: 5s
 
 sensor:
-  - platform: dallas
+    - platform: dallas
     address: 0x0000000000000000
     name: "Temperature"
     id: temp1
     on_value:
       then:
-        - lambda: |-
+                - lambda: |-
             ESP_LOGD("temp", "Temp = %.1f", x);
 
 switch:
-  - platform: gpio
+    - platform: gpio
     pin:
       number: GPIO16
       inverted: true
     name: "Relay 1 - Fan1"
     id: relay1
-  - platform: gpio
+    - platform: gpio
     pin:
       number: GPIO17
       inverted: true
     name: "Relay 2 - Fan2"
     id: relay2
-  - platform: gpio
+    - platform: gpio
     pin:
       number: GPIO18
       inverted: true
     name: "Relay 3 - Comp1"
     id: relay3
-  - platform: gpio
+    - platform: gpio
     pin:
       number: GPIO19
       inverted: true
     name: "Relay 4 - Comp2"
     id: relay4
-  - platform: gpio
+    - platform: gpio
     pin:
       number: GPIO2
       inverted: false
     name: "Test Cycle Manual"
     id: test_button
     on_turn_on:
-      - script.execute: cycle_5min
-      - delay: 1s
-      - switch.turn_off: test_button
+            - script.execute: cycle_5min
+            - delay: 1s
+            - switch.turn_off: test_button
 
 # السكريبت الاساسي للتجربة - 5 دقايق
 script:
-  - id: cycle_5min
+    - id: cycle_5min
     then:
-      - logger.log: "=== Starting 5min Test Cycle ==="
-      - switch.turn_on: relay1
-      - switch.turn_on: relay2
-      - logger.log: "Fans ON, waiting 5s..."
-      - delay: 5s
-      
-      - if:
+            - logger.log: "=== Starting 5min Test Cycle ==="
+            - switch.turn_on: relay1
+            - switch.turn_on: relay2
+            - logger.log: "Fans ON, waiting 5s..."
+            - delay: 5s
+
+            - if:
           condition:
             lambda: 'return id(temp1).state >= 27.0;'
           then:
-            - logger.log: "Temp >=27, Turning ON Comp1 (Relay3)"
-            - switch.turn_on: relay3
+                        - logger.log: "Temp >=27, Turning ON Comp1 (Relay3)"
+                        - switch.turn_on: relay3
           else:
-            - logger.log: "Temp <27, Comp1 stays OFF"
-      
-      - logger.log: "Waiting 30s for compressor stagger..."
-      - delay: 30s
-      
-      - if:
+                        - logger.log: "Temp <27, Comp1 stays OFF"
+
+            - logger.log: "Waiting 30s for compressor stagger..."
+            - delay: 30s
+
+            - if:
           condition:
             lambda: 'return id(temp1).state >= 27.0;'
           then:
-            - logger.log: "Temp still >=27, Turning ON Comp2 (Relay4)"
-            - switch.turn_on: relay4
+                        - logger.log: "Temp still >=27, Turning ON Comp2 (Relay4)"
+                        - switch.turn_on: relay4
           else:
-            - logger.log: "Temp <27, Comp2 stays OFF"
-      
-      - logger.log: "Running 3min (180s)..."
-      - delay: 180s
-      
-      - logger.log: "180s done, Turning OFF Comp1 & Comp2"
-      - switch.turn_off: relay3
-      - switch.turn_off: relay4
+                        - logger.log: "Temp <27, Comp2 stays OFF"
+
+            - logger.log: "Running 3min (180s)..."
+            - delay: 180s
+
+            - logger.log: "180s done, Turning OFF Comp1 & Comp2"
+            - switch.turn_off: relay3
+            - switch.turn_off: relay4
       # لو عايز تطفي المراوح كمان بعد التجربة شيل # من السطرين دول
       # - delay: 10s
       # - switch.turn_off: relay1
       # - switch.turn_off: relay2
-      - logger.log: "=== Cycle Finished, Fans still ON ==="
-
-# تشغيل اوتوماتيك كل 5 دقايق
-interval:
-  - interval: 5min
-    then:
-      - script.execute: cycle_5min
+            - logger.log: "=== Cycle Finished, Fans still ON ==="
