@@ -25,7 +25,6 @@ logger:
 api:
 ota:
     - platform: esphome
-    password: "12345678"
 
 dallas:
     - pin: GPIO4
