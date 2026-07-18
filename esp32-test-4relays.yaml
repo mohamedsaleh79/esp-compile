@@ -1,0 +1,50 @@
+esphome:
+  name: esp32-test-4relays
+  friendly_name: ESP32 5min Test
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+wifi:
+  ssid: "TEST_WIFI"
+  password: "12345678"
+  ap:
+    ssid: "SMaRT # Omar"
+    password: "55561002"
+
+captive_portal:
+logger:
+api:
+ota:
+    - platform: esphome
+
+web_server:
+  port: 80
+
+switch:
+    - platform: gpio
+    pin:
+      number: GPIO16
+      inverted: true
+    name: "Relay 1 - Fan1"
+    id: relay1
+    - platform: gpio
+    pin:
+      number: GPIO17
+      inverted: true
+    name: "Relay 2 - Fan2"
+    id: relay2
+    - platform: gpio
+    pin:
+      number: GPIO18
+      inverted: true
+    name: "Relay 3 - Comp1"
+    id: relay3
+    - platform: gpio
+    pin:
+      number: GPIO19
+      inverted: true
+    name: "Relay 4 - Comp2"
+    id: relay4
